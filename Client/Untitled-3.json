@@ -1,0 +1,73 @@
+{
+  "conversation_id": "c1a2b3",
+  "is_group": false,
+  "participants": [
+    {
+      "user_id": "u101",
+      "name": "Aisha Bello",
+      "avatar": "https://cdn.example.com/avatars/u101.jpg",
+      "last_read_message_id": 104
+    },
+    {
+      "user_id": "u202",
+      "name": "Tunde Okoro",
+      "avatar": "https://cdn.example.com/avatars/u202.jpg",
+      "last_read_message_id": 102
+    }
+  ],
+  "messages": [
+    {
+      "message_id": 101,
+      "sender_id": "u101",
+      "sender_name": "Aisha Bello",
+      "body": "Hey Tunde 👋, have you checked the new farm monitoring dashboard?",
+      "attachments": [],
+      "status": "read",
+      "is_deleted": false,
+      "created_at": "2025-10-15T11:45:00Z"
+    },
+    {
+      "message_id": 102,
+      "sender_id": "u202",
+      "sender_name": "Tunde Okoro",
+      "body": "Yes! It looks great. I’m testing the soil data charts now 🌱.",
+      "attachments": [],
+      "status": "read",
+      "is_deleted": false,
+      "created_at": "2025-10-15T11:46:12Z"
+    },
+    {
+      "message_id": 103,
+      "sender_id": "u101",
+      "sender_name": "Aisha Bello",
+      "body": "Nice! Let’s add rainfall prediction next.",
+      "attachments": [],
+      "status": "delivered",
+      "is_deleted": false,
+      "created_at": "2025-10-15T11:47:09Z"
+    },
+    {
+      "message_id": 104,
+      "sender_id": "u202",
+      "sender_name": "Tunde Okoro",
+      "body": "Sure thing. I’ll prepare the API endpoint tonight ☁️.",
+      "attachments": [
+        {
+          "url": "https://cdn.example.com/files/task-plan.pdf",
+          "filename": "task-plan.pdf",
+          "type": "application/pdf",
+          "size": 24567
+        }
+      ],
+      "status": "sent",
+      "is_deleted": false,
+      "created_at": "2025-10-15T11:48:21Z"
+    }
+  ],
+  "unread_count": 0,
+  "updated_at": "2025-10-15T11:48:21Z",
+  "pagination": {
+    "has_more": false,
+    "next_cursor": null
+  }
+}
