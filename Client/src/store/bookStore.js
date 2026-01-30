@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
+import { toast } from "react-toastify";
 axios.defaults.withCredentials = true;
 
 const initialState = {
@@ -38,6 +39,54 @@ export const useBookStore = create((set, get) => ({
       set({ loadingBooks: false });
     }
   },
+ updateBook: async (payload) => {
+  set({ loadingBooks: true, booksError: null, bookSuccess: null });
+
+  try {
+    const { data } = await axios.post(
+      `${booksEndpoint}/update-book`,
+      payload
+    );
+    if(!data.success){
+      toast.error(data.message)
+      return
+    }
+    const { books, userBooks } = get();
+    const updatedBook = data.data;
+
+    set({
+      loadingBooks: false,
+      bookSuccess: true,
+      booksError: null,
+
+      books: books.map((book) =>
+        book.book_id === updatedBook.book_id ? updatedBook : book
+      ),
+
+      userBooks: userBooks.map((book) =>
+        book.book_id === updatedBook.book_id ? updatedBook : book
+      ),
+    });
+    toast.success(data.message)
+    return { success: true, message: data.message };
+  } catch (error) {
+    console.log("❌ Error updating book:", error.message);
+
+    set({
+      loadingBooks: false,
+      bookSuccess: false,
+      booksError:
+        error?.response?.data?.message || error.message,
+    });
+
+    return {
+      success: false,
+      message:
+        error?.response?.data?.message || error.message,
+    };
+  }
+},
+
   fetchBooks: async (force = false) => {
     const { books } = get();
 

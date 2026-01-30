@@ -252,7 +252,7 @@ const Sidebar = ({
             }`}
           >
             <img
-              src={user.avatar || "hassy.jpg"}
+              src={user.avatar || "defaultAvatar.png"}
               alt={user.full_name}
               className="w-9 h-9 rounded-full border-2 border-white shadow-sm"
             />

@@ -10,11 +10,10 @@ import axios from "axios";
 const DashboardHeader = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+
   const [isMobile, setIsMobile] = useState(false);
   const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(false);
+
   const [notificationsLoading, setNotificationsLoading] = useState(false);
   const navigate = useNavigate();
   const notificationsRef = useRef(null);
@@ -37,8 +36,8 @@ const DashboardHeader = () => {
       );
       setNotifications(data.notifications || []);
     } catch (error) {
-      console.error("Error fetching notifications:", error.message);
-      toast.error("Failed to load notifications");
+      console.error("Error fetching notifications:", error);
+      toast.info("Failed to load notifications");
       setNotifications([]);
     } finally {
       setNotificationsLoading(false);
@@ -76,7 +75,7 @@ const DashboardHeader = () => {
   const handleMarkAllAsRead = async () => {
     try {
       // Optimistic update
-      setNotifications(prev => 
+      setNotifications(prev =>
         prev.map(notification => ({ ...notification, unread: false }))
       );
 
@@ -84,7 +83,7 @@ const DashboardHeader = () => {
       await axios.post(
         `${import.meta.env.VITE_SERVER_URL}/notification/mark-all-read/${user.user_id}`
       );
-      
+
       toast.success("All notifications marked as read");
     } catch (error) {
       console.error("Error marking notifications as read:", error.message);
@@ -134,7 +133,7 @@ const DashboardHeader = () => {
     <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
       <div className="flex items-center justify-between p-4">
         {/* Search Bar - Hidden on mobile */}
-        
+
 
         {/* Right Section */}
         <div className="flex items-center space-x-4 ml-auto">
@@ -181,7 +180,7 @@ const DashboardHeader = () => {
               className="flex items-center space-x-2 p-2 hover:bg-gray-100 rounded-lg transition duration-200"
             >
               <img
-                src={user.avatar || "/hassy.jpg"}
+                src={user.avatar || "/defaultAvatar.png"}
                 alt={user.full_name}
                 className="w-8 h-8 rounded-full"
               />

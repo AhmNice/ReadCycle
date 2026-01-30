@@ -26,12 +26,23 @@ import { useBookStore } from "../store/bookStore";
 import { useAuthStore } from "../store/authStore";
 
 const BookListings = ({ onBookClick, onAddBook, showFilters = true }) => {
-  const { fetchUserBooks, userBooks, loadingBooks, booksError } = useBookStore();
-  const { user }= useAuthStore()
+  const { fetchUserBooks, userBooks, loadingBooks, booksError } =
+    useBookStore();
+  const { user } = useAuthStore();
 
   useEffect(() => {
     fetchUserBooks(false, user.user_id);
   }, []);
+  const handleBookClick = (book) => {
+    console.log("Book clicked:", book);
+    // Navigate to book details or show more info
+  };
+
+  const handleUpdateBookStatus = (book) => {
+  console.log('Update status for book:', book);
+  // Open a status update modal or navigate to update page
+  // Could show a dropdown to select new status: active, sold, swap, rented
+};
 
   const [filter, setFilter] = useState("all");
   const [sortBy, setSortBy] = useState("recent");
@@ -192,7 +203,12 @@ const BookListings = ({ onBookClick, onAddBook, showFilters = true }) => {
         ) : (
           <div className="grid grid-cols-1  lg:grid-cols-2 gap-4 md:gap-6">
             {filteredBooks.map((book) => (
-              <Book book={book} expandedBook={expandedBook} />
+              <Book
+                book={book}
+                expandedBook={expandedBook}
+                onBookClick={handleBookClick}
+                onUpdateStatusClick={handleUpdateBookStatus}
+              />
             ))}
           </div>
         )}

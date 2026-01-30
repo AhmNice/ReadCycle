@@ -1,9 +1,7 @@
 // pages/SellBook.jsx
 import React, { useState } from "react";
 import {
-  Upload,
   Camera,
-  DollarSign,
   RefreshCw,
   Calendar,
   BookOpen,
@@ -106,7 +104,7 @@ const SellBook = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validate book cover
     if (!bookCover) {
       toast.error("Please upload a book cover image");
@@ -121,7 +119,7 @@ const SellBook = () => {
 
     try {
       setLoading(true);
-      
+
       // Create FormData for file upload
       const payload = new FormData();
       payload.append("book_title", formData.title);
@@ -145,7 +143,7 @@ const SellBook = () => {
       }
 
       const response = await createBook(payload);
-      
+
       if (response.success) {
         toast.success(response?.message);
         // Reset form
@@ -227,13 +225,13 @@ const SellBook = () => {
                       : "border-gray-200 hover:border-gray-300"
                   }`}
                 >
-                  <DollarSign
+                  <p
                     className={`h-6 w-6 mb-2 ${
                       listingType === "sale"
                         ? "text-green-600"
                         : "text-gray-400"
                     }`}
-                  />
+                  >₦</p>
                   <h3 className="font-semibold text-gray-900">For Sale</h3>
                   <p className="text-sm text-gray-600 mt-1">
                     Sell your book for cash
@@ -461,7 +459,7 @@ const SellBook = () => {
               {(listingType === "sale" || listingType === "rent") && (
                 <div className="bg-white rounded-xl shadow-sm border p-6">
                   <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                    <DollarSign className="h-5 w-5 mr-2 text-green-600" />
+                    <p className="h-5 w-5 mr-2 text-green-600" >₦</p>
                     {listingType === "sale" ? "Pricing" : "Rental Details"}
                   </h2>
 
@@ -472,7 +470,7 @@ const SellBook = () => {
                           Price *
                         </label>
                         <div className="relative">
-                          <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                          <p className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 " >₦</p>
                           <input
                             type="number"
                             required
@@ -499,7 +497,7 @@ const SellBook = () => {
                             Rental Price *
                           </label>
                           <div className="relative">
-                            <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                            <p className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 " >₦</p>
                             <input
                               type="number"
                               required

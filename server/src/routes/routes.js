@@ -20,6 +20,7 @@ import { verifySession } from "../util/createSession.js";
 import {
   createBook,
   fetchBooks,
+  updateBookStatus,
   userBooks,
 } from "../controllers/book.controller.js";
 import {
@@ -223,6 +224,23 @@ book_router.get(
   userBooks
 );
 
+book_router.post(
+  "/update-book",
+  [
+    body("book_id")
+      .notEmpty()
+      .withMessage("Book ID is required")
+      .isInt()
+      .withMessage("Book ID must be a number"),
+
+    body("newStatus")
+      .notEmpty()
+      .withMessage("New status is required")
+      .isIn(["active", "inactive", "deleted", "swapped", "rented"])
+      .withMessage("Invalid status value"),
+  ],
+  updateBookStatus
+);
 export const chatsRouter = express.Router();
 chatsRouter.post(
   "/start",

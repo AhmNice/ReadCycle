@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
-import { Pool } from "pg";
+import pkg from "pg";
+const { Pool } = pkg;
 
 dotenv.config();
 
@@ -31,7 +32,7 @@ const createDatabase = async () => {
     const checkResult = await defaultPool.query(checkQuery, [db_name]);
 
     if (checkResult.rowCount === 0) {
-      await defaultPool.query(`CREATE DATABASE ${db_name}`);
+      await defaultPool.query(`CREATE DATABASE "${db_name}"`);
       console.log(`✅ Database "${db_name}" created successfully`);
     } else {
       console.log(`ℹ️ Database "${db_name}" already exists.`);
@@ -48,21 +49,25 @@ const createTables = async () => {
   try {
     await client.query("BEGIN");
 
+    // ✅ Required extensions
+    await client.query(`CREATE EXTENSION IF NOT EXISTS "pgcrypto";`);
+    await client.query(`CREATE EXTENSION IF NOT EXISTS "citext";`);
+
     // USERS
     await client.query(`
       CREATE TABLE IF NOT EXISTS users (
         user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         full_name VARCHAR(225) NOT NULL,
-        email VARCHAR(100) UNIQUE NOT NULL,
+        email CITEXT UNIQUE NOT NULL,
         avatar TEXT,
         is_online BOOLEAN DEFAULT FALSE,
         university VARCHAR(225) NOT NULL,
         major VARCHAR(50) NOT NULL,
-        phone_number VARCHAR(15),
-        bio VARCHAR(225),
-        password_hash VARCHAR(225),
+        phone_number VARCHAR(20),
+        bio TEXT,
+        password_hash TEXT,
         isVerified BOOLEAN DEFAULT FALSE,
-        forget_password_token VARCHAR(225),
+        forget_password_token TEXT,
         forget_password_token_expires_at TIMESTAMP,
         verification_token VARCHAR(20),
         verification_token_expires_at TIMESTAMP,
@@ -96,10 +101,11 @@ const createTables = async () => {
       );
     `);
 
-    // ✅ add this FK after both tables exist
+    // Add last message reference
     await client.query(`
       ALTER TABLE conversations
-      ADD COLUMN IF NOT EXISTS last_message_id UUID REFERENCES messages(message_id) ON DELETE SET NULL;
+      ADD COLUMN IF NOT EXISTS last_message_id UUID
+      REFERENCES messages(message_id) ON DELETE SET NULL;
     `);
 
     // PARTICIPANTS
@@ -125,12 +131,13 @@ const createTables = async () => {
         book_price DECIMAL DEFAULT 0.0,
         book_location VARCHAR(220) NOT NULL,
         book_condition VARCHAR(220) NOT NULL,
-        book_description VARCHAR(225),
+        book_description TEXT,
         book_course VARCHAR(225),
-        book_cover VARCHAR(225),
+        book_cover TEXT,
         book_swap_with VARCHAR(225) DEFAULT NULL,
         book_rental_period VARCHAR(225),
-        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+        book_status VARCHAR(20) NOT NULL CHECK (book_status IN ('active', 'sold', 'swap','rented')),
+        created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP
       );
     `);
@@ -146,19 +153,18 @@ const createTables = async () => {
         action_performed VARCHAR(150),
         body TEXT,
         is_read BOOLEAN DEFAULT FALSE,
-        created_at TIMESTAMP DEFAULT NOW(),
         for_all BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
       );
     `);
 
-    // ✅ separate index queries (Postgres disallows multi-statements by default)
-    await client.query(
-      `CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id);`
-    );
-    await client.query(
-      `CREATE INDEX IF NOT EXISTS idx_notifications_type ON notifications(type);`
-    );
+    // INDEXES
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id);`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_notifications_type ON notifications(type);`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_messages_conversation_id ON messages(conversation_id);`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_messages_sender_id ON messages(sender_id);`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_books_owner ON books(book_owner);`);
 
     await client.query("COMMIT");
     console.log("✅ All tables created successfully");

@@ -3,7 +3,7 @@ import { Book } from "../models/Book.js";
 import { Notification } from "../models/Notification.js";
 import { User } from "../models/User.js";
 import handleInputValidation from "../util/handleInputValidation.js";
-import fs from "fs";
+
 export const createBook = async (req, res) => {
   if (!handleInputValidation(req, res)) return;
 
@@ -58,8 +58,7 @@ export const createBook = async (req, res) => {
 
     const savedBook = await newBook.save();
 
-    //  Remove uploaded file from local storage
-    fs.unlinkSync(req.file.path);
+
 
     //  Create notification for the book owner
     const notification = new Notification({
@@ -83,7 +82,6 @@ export const createBook = async (req, res) => {
     });
   }
 };
-
 export const fetchBooks = async (req, res) => {
   if (!handleInputValidation(req, res)) return;
 
@@ -150,3 +148,36 @@ export const userBooks = async (req, res) => {
     });
   }
 };
+export const updateBookStatus = async (req, res) => {
+  const { book_id, newStatus } = req.body;
+
+  try {
+
+    const book = await Book.findById(book_id);
+
+    if (!book) {
+      return res.status(404).json({
+        success: false,
+        message: "Book not found",
+      });
+    }
+
+   
+    const updatedBook = await Book.updateById(book_id, {
+      book_status: newStatus,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Book status updated successfully",
+      data: updatedBook,
+    });
+  } catch (error) {
+    console.error("❌ Error updating book status:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+

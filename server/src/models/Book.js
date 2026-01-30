@@ -14,7 +14,8 @@ export class Book {
     book_cover,
     book_rental_period,
     book_description,
-    book_course
+    book_course,
+    book_status = 'active',
   }) {
     this.book_author = book_author;
     this.book_title = book_title;
@@ -29,10 +30,11 @@ export class Book {
     this.book_rental_period = book_rental_period;
     this.book_description = book_description
     this.book_course =book_course
+    this.book_status = book_status
   }
 
-  // ✅ Save a new book to the DB
-  // ✅ Save a new book to the DB
+  //  Save a new book to the DB
+  //  Save a new book to the DB
   async save() {
     try {
       let query;
@@ -41,10 +43,10 @@ export class Book {
       if (this.book_for === "swap") {
         // 🔁 Include book_swap_with if book is for swap
         query = `
-        INSERT INTO books 
-          (book_title, book_author, book_owner, book_price, book_for, book_condition, book_location, book_cover, book_swap_with,book_description,book_course)
-        VALUES 
-          ($1, $2, $3, $4, $5, $6, $7, $8, $9,$10,$11)
+        INSERT INTO books
+          (book_title, book_author, book_owner, book_price, book_for, book_condition, book_location, book_cover, book_swap_with,book_description,book_course,book_status)
+        VALUES
+          ($1, $2, $3, $4, $5, $6, $7, $8, $9,$10,$11, $12)
         RETURNING *;
       `;
         values = [
@@ -58,14 +60,15 @@ export class Book {
           this.book_cover,
           this.book_swap_with,
           this.book_description,
-          this.book_course
+          this.book_course,
+          this.book_status
         ];
       } else if (this.book_for === "rent") {
         query = `
-    INSERT INTO books 
-      (book_title, book_author, book_owner, book_price, book_for, book_condition, book_location, book_cover, book_swap_with, book_rental_period,book_description,book_course)
-    VALUES 
-      ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10,$11,$12)
+    INSERT INTO books
+      (book_title, book_author, book_owner, book_price, book_for, book_condition, book_location, book_cover, book_swap_with, book_rental_period,book_description,book_course, book_status)
+    VALUES
+      ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10,$11,$12,$13)
     RETURNING *;
   `;
         values = [
@@ -80,15 +83,16 @@ export class Book {
           this.book_swap_with,
           this.book_rental_period,
           this.book_description,
-          this.book_course
+          this.book_course,
+          this.book_status
         ];
       } else {
         // 🪶 Regular insert (no swap info)
         query = `
-        INSERT INTO books 
-          (book_title, book_author, book_owner, book_price, book_for, book_condition, book_location, book_cover,book_description,book_course)
-        VALUES 
-          ($1, $2, $3, $4, $5, $6, $7, $8,$9,$10)
+        INSERT INTO books
+          (book_title, book_author, book_owner, book_price, book_for, book_condition, book_location, book_cover,book_description,book_course, book_status)
+        VALUES
+          ($1, $2, $3, $4, $5, $6, $7, $8,$9,$10,$11)
         RETURNING *;
       `;
         values = [
@@ -101,7 +105,8 @@ export class Book {
           this.book_location,
           this.book_cover,
           this.book_description,
-          this.book_course
+          this.book_course,
+          this.book_status
         ];
       }
 
@@ -113,7 +118,7 @@ export class Book {
     }
   }
 
-  // ✅ static method to fetch books
+  //  static method to fetch books
   static async fetchBooks() {
     try {
       const results = await pool.query(`SELECT * FROM books`);
@@ -123,7 +128,7 @@ export class Book {
       throw error;
     }
   }
-  // ✅ static method to fetch single user books
+  //  static method to fetch single user books
   static async fetchUserBook(user_id) {
     try {
       const results = await pool.query(
@@ -136,8 +141,7 @@ export class Book {
       throw error;
     }
   }
-
-  // ✅ Static method to find a book by any of many fields
+  //  Static method to find a book by any of many fields
   static async find({ id, author, title, user }) {
     try {
       const conditions = [];
@@ -177,7 +181,7 @@ export class Book {
       throw error;
     }
   }
-  // ✅ Find book by ID
+  //  Find book by ID
   static async findById(id) {
     try {
       const result = await pool.query(
@@ -190,7 +194,7 @@ export class Book {
       throw error;
     }
   }
-  // ✅ Find all books by a given author
+  //  Find all books by a given author
   static async findByAuthor(author) {
     try {
       const result = await pool.query(
@@ -203,8 +207,50 @@ export class Book {
       throw error;
     }
   }
-  //   ✅ update book by id
-  static async updateById(id) {}
-  // ✅ delete book
-  static async delete(id) {}
+  //    update book by id
+  static async updateById(id, updates) {
+  try {
+    const fields = [];
+    const values = [];
+    let index = 1;
+
+    for (const key in updates) {
+      fields.push(`${key} = $${index++}`);
+      values.push(updates[key]);
+    }
+
+    if (fields.length === 0) return null;
+
+    const query = `
+      UPDATE books
+      SET ${fields.join(", ")}
+      WHERE book_id = $${index}
+      RETURNING *;
+    `;
+
+    values.push(id);
+
+    const { rows } = await pool.query(query, values);
+    return rows[0] || null;
+  } catch (error) {
+    console.error("❌ Error updating book:", error.message);
+    throw error;
+  }
+}
+
+
+  static async delete(id) {
+  try {
+    const result = await pool.query(
+      `UPDATE books SET book_status = 'deleted' WHERE book_id = $1 RETURNING *`,
+      [id]
+    );
+    return result.rows[0] || null;
+  } catch (error) {
+    console.error("❌ Error deleting book:", error.message);
+    throw error;
+  }
+}
+
+
 }
