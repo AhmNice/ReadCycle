@@ -33,12 +33,12 @@ const ReadCycleLanding = () => {
       </nav>
 
       {/* Hero Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 h-screen flex justify-center items-center">
         <div className="text-center mt-10">
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-            Share Books,
-            <span className="text-green-600"> Save Money</span>,
-            Protect Our Planet
+           Peer to Peer
+            <span className="text-green-600"> Books Exchange </span>
+            Platform
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
             ReadCycle connects students to buy, sell, or lend textbooks in a sustainable community.
@@ -50,7 +50,7 @@ const ReadCycleLanding = () => {
               navigate('login')
             }}
             className="bg-green-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-green-700 transition duration-200 flex items-center justify-center">
-              Start Trading Books
+              Get Started
               <ArrowRight className="ml-2 h-5 w-5" />
             </button>
 

@@ -52,19 +52,19 @@ const BookListings = ({ onBookClick, onAddBook, showFilters = true }) => {
   const filters = [
     { key: "all", label: "All Listings", count: userBooks.length },
     {
-      key: "active",
-      label: "Active",
-      count: userBooks.filter((b) => b.status === "active").length,
+      key: "rent",
+      label: "Rent",
+      count: userBooks.filter((b) => b.book_for === "rent").length,
     },
     {
-      key: "pending",
-      label: "Pending",
-      count: userBooks.filter((b) => b.status === "pending").length,
+      key: "sale",
+      label: "Sale",
+      count: userBooks.filter((b) => b.book_for === "sale" && b.book_status !== "sold").length,
     },
     {
-      key: "sold",
-      label: "Sold",
-      count: userBooks.filter((b) => b.status === "sold").length,
+      key: "swap",
+      label: "Swap",
+      count: userBooks.filter((b) => b.book_for === "swap").length,
     },
   ];
 
@@ -77,7 +77,7 @@ const BookListings = ({ onBookClick, onAddBook, showFilters = true }) => {
 
   const filteredBooks = userBooks
     .filter((book) => {
-      const matchesFilter = filter === "all" || book.status === filter;
+      const matchesFilter = filter === "all" || book.book_for === filter;
       const matchesSearch =
         book?.book_title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         book?.course?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -108,7 +108,7 @@ const BookListings = ({ onBookClick, onAddBook, showFilters = true }) => {
             </div>
             <div>
               <h2 className="text-xl font-bold text-gray-900">
-                Your Book Listings
+                My Book Listings
               </h2>
               <p className="text-sm text-gray-600">
                 {filteredBooks.length} book

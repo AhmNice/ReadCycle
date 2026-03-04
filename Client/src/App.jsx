@@ -26,6 +26,8 @@ import AllBooks from "./pages/AllBooks";
 import VerifyRoute from "./hook/VerifyRoute";
 import ResetPassword from "./pages/ResetPassword";
 import ForgotPassword from "./pages/ForgotPassword";
+import RentBook from "./pages/RentBook";
+import SwapBook from "./pages/Swap";
 
 function App() {
   const router = createBrowserRouter(
@@ -87,6 +89,22 @@ function App() {
           element={
             <ProtectedRoute>
               <SellBook />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="rent-books"
+          element={
+            <ProtectedRoute>
+              <RentBook />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="swap-books"
+          element={
+            <ProtectedRoute>
+              <SwapBook />
             </ProtectedRoute>
           }
         />

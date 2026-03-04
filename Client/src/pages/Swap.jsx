@@ -1,9 +1,8 @@
-// pages/SellBook.jsx
+// pages/RentBook.jsx
 import React, { useState } from "react";
 import {
   Camera,
   RefreshCw,
-  Calendar,
   BookOpen,
   MapPin,
   Info,
@@ -20,12 +19,12 @@ import { useAuthStore } from "../store/authStore";
 import { useBookStore } from "../store/bookStore";
 import { toast } from "react-toastify";
 
-const SellBook = () => {
+const SwapBook = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const { user } = useAuthStore();
   const { createBook } = useBookStore();
   const [loading, setLoading] = useState(false);
-  const [listingType, setListingType] = useState("sale"); // 'sale', 'swap', 'rent'
+  const [listingType, setListingType] = useState("swap"); // 'sale', 'swap', 'rent'
   const [bookCover, setBookCover] = useState(null); // Single book cover image
 
   const [formData, setFormData] = useState({
@@ -203,14 +202,15 @@ const SellBook = () => {
             {/* Header */}
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                List Your Book For Sale
+                List Your Book For Swap
               </h1>
               <p className="text-gray-600">
                 Share your book with the ReadCycle community
               </p>
             </div>
 
-        
+            {/* Listing Type Selector */}
+
 
             {/* Main Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -571,4 +571,4 @@ const SellBook = () => {
   );
 };
 
-export default SellBook;
+export default SwapBook;

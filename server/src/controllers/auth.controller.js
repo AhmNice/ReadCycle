@@ -9,7 +9,6 @@ import {
   generateOTP,
 } from "../util/grenerateToken.js";
 import { pool } from "../database/db_setup.js";
-import fs from "fs";
 import cloudinary from "../config/cloudinary.config.js";
 import {
   sendEmailResetSuccess,
@@ -456,7 +455,7 @@ export const logOut = async (req, res) => {
   try {
     const sessionName = "readCycle_userSession";
 
-   
+
     if (req.user?.email) {
       await User.markUserOffline(req.user.email); // you can define this similar to markUserOnline
     }
@@ -538,11 +537,29 @@ export const uploadProfilePicture = async (req, res) => {
       });
     }
 
+
     // ✅ Upload to Cloudinary
-    const result = await cloudinary.uploader.upload(req.file.path, {
-      folder: "HASSY/readcycle/profile_pic",
-      public_id: `${user.full_name}_profile_picture-${Date.now()}`,
-    });
+    let result;
+    try {
+      result = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            folder: "HASSY/readcycle/profile_pic",
+            public_id: `${user.full_name}_profile_picture-${Date.now()}`,
+          },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          }
+        );
+
+        stream.end(req.file.buffer);
+      });
+
+      console.log("Uploaded file URL:", result.secure_url);
+    } catch (err) {
+      console.error("Error uploading profile picture:", err);
+    }
 
     const updatedUser = await pool.query(
       `UPDATE users SET avatar = $1 WHERE user_id = $2 RETURNING *`,
@@ -550,7 +567,7 @@ export const uploadProfilePicture = async (req, res) => {
     );
     const { password_hash, ...rest } = updatedUser.rows[0];
     // ✅ Remove local file
-    fs.unlinkSync(req.file.path);
+
 
     // ✅ Send response
     res.status(200).json({
