@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore"; // your existing store
 import { MessageCircle } from "lucide-react";
 
-const MessageSellerButton = ({ sellerId }) => {
+const MessageSellerButton = ({ sellerId, book_type }) => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const handleMessageSeller = async () => {
@@ -26,6 +26,16 @@ const MessageSellerButton = ({ sellerId }) => {
       alert("Could not start chat");
     }
   };
+  const buttonText = (book_type)=>{
+    switch (book_type) {
+      case 'swap':
+        return "Message Owner"
+      case 'rent':
+        return "Message Renter"
+      default:
+        return "Message Seller"
+    }
+  }
 
   return (
     <button
@@ -33,7 +43,7 @@ const MessageSellerButton = ({ sellerId }) => {
       className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-2 rounded-xl font-semibold hover:from-green-600 hover:to-emerald-700 transition-all duration-200 transform  shadow-lg hover:shadow-xl flex items-center cursor-pointer justify-center space-x-2 group/btn"
     >
       <MessageCircle className="h-3 w-3 group-hover/btn:scale-110 transition-transform duration-200" />
-      <span className="text-sm">Message Seller</span>
+      <span className="text-sm">{buttonText(book_type)}</span>
     </button>
   );
 };

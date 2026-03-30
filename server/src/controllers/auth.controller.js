@@ -328,7 +328,7 @@ export const requestPasswordChange = async (req, res) => {
     const token = generateAndHashResetToken();
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
     const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${token.token}`;
-
+    
     await sendForgotPasswordEmail(user.full_name, resetLink, user.email);
 
     await pool.query(

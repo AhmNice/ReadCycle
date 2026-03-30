@@ -202,7 +202,7 @@ const Book2 = ({ book, viewMode, onMessageSeller }) => {
         </div>
 
         {/* Message Seller Button */}
-        <MessageSellerButton sellerId={book.seller?.user_id} />
+        <MessageSellerButton sellerId={book.seller?.user_id} book_type={book.listingType} />
       </div>
     </div>
   );
