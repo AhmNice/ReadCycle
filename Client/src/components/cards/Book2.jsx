@@ -25,6 +25,20 @@ const Book2 = ({ book, viewMode, onMessageSeller }) => {
         return "bg-gradient-to-r from-gray-500 to-gray-600 text-white";
     }
   };
+   const getTypeDisplay = () => {
+    switch (book.book_for) {
+      case 'sale':
+        return { text: 'For Sale', color: 'text-green-600', bg: 'bg-green-50' };
+      case 'swap':
+        return { text: 'For Swap', color: 'text-purple-600', bg: 'bg-purple-50' };
+      case 'rent':
+        return { text: 'For Rent', color: 'text-blue-600', bg: 'bg-blue-50' };
+      default:
+        return { text: 'For Sale', color: 'text-gray-600', bg: 'bg-gray-50' };
+    }
+  };
+
+  const typeDisplay = getTypeDisplay();
 
   const getConditionColor = (condition) => {
     switch (condition) {
@@ -42,27 +56,29 @@ const Book2 = ({ book, viewMode, onMessageSeller }) => {
   };
 
   const getDaysAgo = (dateString) => {
-  const date = new Date(dateString);
-  const now = new Date();
+    const date = new Date(dateString);
+    const now = new Date();
 
-  if (isNaN(date.getTime())) return "Invalid date";
+    if (isNaN(date.getTime())) return "Invalid date";
 
-  const diffMs = now - date;
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    const diffMs = now - date;
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
 
-  if (diffMinutes < 1) return "Just now";
-  if (diffMinutes < 60) return `${diffMinutes} min${diffMinutes > 1 ? "s" : ""} ago`;
-  if (diffHours < 24) return `${diffHours} hr${diffHours > 1 ? "s" : ""} ago`;
-  if (diffDays === 0) return "Today";
-  if (diffDays === 1) return "Yesterday";
-  if (diffDays < 7) return `${diffDays} days ago`;
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)} week${Math.floor(diffDays / 7) > 1 ? "s" : ""} ago`;
-  if (diffDays < 365) return `${Math.floor(diffDays / 30)} month${Math.floor(diffDays / 30) > 1 ? "s" : ""} ago`;
-  return `${Math.floor(diffDays / 365)} year${Math.floor(diffDays / 365) > 1 ? "s" : ""} ago`;
-};
-
+    if (diffMinutes < 1) return "Just now";
+    if (diffMinutes < 60)
+      return `${diffMinutes} min${diffMinutes > 1 ? "s" : ""} ago`;
+    if (diffHours < 24) return `${diffHours} hr${diffHours > 1 ? "s" : ""} ago`;
+    if (diffDays === 0) return "Today";
+    if (diffDays === 1) return "Yesterday";
+    if (diffDays < 7) return `${diffDays} days ago`;
+    if (diffDays < 30)
+      return `${Math.floor(diffDays / 7)} week${Math.floor(diffDays / 7) > 1 ? "s" : ""} ago`;
+    if (diffDays < 365)
+      return `${Math.floor(diffDays / 30)} month${Math.floor(diffDays / 30) > 1 ? "s" : ""} ago`;
+    return `${Math.floor(diffDays / 365)} year${Math.floor(diffDays / 365) > 1 ? "s" : ""} ago`;
+  };
 
   const calculateSavings = (price, originalPrice) => {
     return Math.round(((originalPrice - price) / originalPrice) * 100);
@@ -101,7 +117,7 @@ const Book2 = ({ book, viewMode, onMessageSeller }) => {
         <div className="absolute top-3 left-3">
           <span
             className={`px-3 py-1.5 rounded-full text-xs font-bold shadow-lg ${getListingTypeColor(
-              book.listingType
+              book.listingType,
             )}`}
           >
             {getListingTypeLabel(book.listingType)}
@@ -118,9 +134,7 @@ const Book2 = ({ book, viewMode, onMessageSeller }) => {
         )}
 
         {/* Stats Overlay */}
-        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs">
-
-        </div>
+        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs"></div>
       </div>
 
       {/* Book Details */}
@@ -152,27 +166,30 @@ const Book2 = ({ book, viewMode, onMessageSeller }) => {
         {/* Price and Condition */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
-            {book.price ? (            <div className="flex items-center space-x-2">
-              <DollarSign className="h-4 w-4 text-green-600" />
-              <span className="text-xl font-bold text-gray-900">
-                {book.price}
-              </span>
-
-            </div>
-): (
+            {book.price ? (
+              <div className="flex items-center space-x-2">
+                <DollarSign className="h-4 w-4 text-green-600" />
+                <span className="text-xl font-bold text-gray-900">
+                  {book.price}
+                </span>
+              </div>
+            ) : (
               <div className="flex items-center space-x-2">
                 <p>Swap with: </p>
-              <span className="text-xl font-bold text-gray-900">
-                {book.swap}
-              </span>
-
-            </div>
-
-)}
+                <span className="text-xl font-bold text-gray-900">
+                  {book.swap}
+                </span>
+              </div>
+            )}
           </div>
+          {book.listingType === "rent" && (
+                <div className={`px-2 py-1 rounded text-xs font-medium ${typeDisplay.bg} ${typeDisplay.color}`}>
+                  Rent: {book.book_rental_period || "Flexible"}
+                </div>
+              )}
           <span
             className={`px-2 py-1 rounded-lg text-xs font-medium ${getConditionColor(
-              book.condition
+              book.condition,
             )}`}
           >
             {book.condition}
@@ -202,7 +219,10 @@ const Book2 = ({ book, viewMode, onMessageSeller }) => {
         </div>
 
         {/* Message Seller Button */}
-        <MessageSellerButton sellerId={book.seller?.user_id} book_type={book.listingType} />
+        <MessageSellerButton
+          sellerId={book.seller?.user_id}
+          book_type={book.listingType}
+        />
       </div>
     </div>
   );

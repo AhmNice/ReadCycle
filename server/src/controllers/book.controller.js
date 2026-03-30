@@ -105,6 +105,7 @@ export const fetchBooks = async (req, res) => {
           location: book.book_location,
           swap: book.book_swap_with,
           image: book.book_cover || null,
+          book_rental_period: book.book_rental_period,
           seller: {
             name: owner?.full_name || "Unknown Seller",
             avatar: owner?.avatar,
@@ -162,7 +163,7 @@ export const updateBookStatus = async (req, res) => {
       });
     }
 
-   
+
     const updatedBook = await Book.updateById(book_id, {
       book_status: newStatus,
     });
